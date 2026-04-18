@@ -43,6 +43,8 @@ A Hermes Agent / OpenClaw adaptation of [JuliusBrussee/caveman](https://github.c
 
 ## Before / After
 
+![Terse Mode Demo](demo.png)
+
 | Normal (87 tokens) | Terse — full (24 tokens) |
 |--------------------|-------------------------|
 | "当然！我很高兴帮你解决这个问题。你遇到的问题很可能是由于认证中间件没有正确验证 token 过期时间导致的。让我看一下并建议一个修复方案。" | "认证中间件 bug。Token 过期检查用了 < 而不是 <=。修：" |
