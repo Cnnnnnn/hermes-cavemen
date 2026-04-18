@@ -15,5 +15,31 @@ jobs:
       - name: Install yamllint
         run: pip install yamllint
 
-      - name: Lint YAML files
-        run: yamllint --no-warnings SKILL.md
+      - name: Lint SKILL.md YAML frontmatter
+        run: |
+          # Extract and validate only the YAML frontmatter (lines between --- markers)
+          # This avoids parsing markdown body as YAML
+          python3 -c "
+          import sys
+          with open('SKILL.md') as f:
+              lines = f.readlines()
+          # Find frontmatter boundaries
+          fm_start = None
+          fm_end = None
+          for i, line in enumerate(lines):
+              if line.strip() == '---':
+                  if fm_start is None:
+                      fm_start = i
+                  elif fm_start is not None and fm_end is None:
+                      fm_end = i
+                      break
+          if fm_start is not None and fm_end is not None:
+              fm = ''.join(lines[fm_start:fm_end+1])
+              with open('/tmp/frontmatter.yaml', 'w') as out:
+                  out.write(fm)
+              print(f'Extracted frontmatter lines {fm_start+1}-{fm_end+1}')
+          else:
+              print('No frontmatter found')
+              sys.exit(1)
+          "
+          yamllint --no-warnings /tmp/frontmatter.yaml

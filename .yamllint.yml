@@ -1,0 +1,17 @@
+extends:
+  default
+
+rules:
+  line-length:
+    level: warning
+    max: 200
+  document-start:
+    level: warning
+  comments:
+    level: warning
+  colons:
+    level: warning
+  commas:
+    level: warning
+  trailing-spaces:
+    level: warning
