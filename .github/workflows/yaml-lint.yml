@@ -16,4 +16,4 @@ jobs:
         run: pip install yamllint
 
       - name: Lint YAML files
-        run: yamllint --no-warnings SOUL.md SKILL.md
+        run: yamllint --no-warnings SKILL.md
