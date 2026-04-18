@@ -125,17 +125,19 @@ def quality_check(orig, comp):
     dirs = re.findall(r'涨|跌|买入|卖出|up|down|buy|sell|long|short|多|空|增持|减持|看多|看空', orig)
     comp_dirs = re.findall(r'涨|跌|买入|卖出|up|down|buy|sell|long|short|多|空|增持|减持|看多|看空', comp)
     if dirs and comp_dirs: qscore += 1
-    actions = re.findall(r'修|查|改|看|建议|帮|买|卖|增|减|set|fix|check|buy|sell', orig)
-    comp_actions = re.findall(r'修|查|改|看|建议|帮|买|卖|增|减|set|fix|check|buy|sell', comp)
+    actions = re.findall(r'修|查|改|看|建议|帮|买|卖|增|减|set|fix|check|buy|sell|持|入|出|建|平', orig)
+    comp_actions = re.findall(r'修|查|改|看|建议|帮|买|卖|增|减|set|fix|check|buy|sell|持|入|出|建|平', comp)
     if actions and comp_actions: qscore += 1
     return 'OK' if qscore >= 2 else 'LOW_QUALITY'
 
 def compress_lite(text):
     for f in ['当然！','当然','很乐意','很高兴','大概','我认为','其实','可以说','基本上','应该','可能']:
         text = text.replace(f, '')
-    for f in ['just ','really ','basically ','actually ','simply ','I think ','I believe ','seems like ',
+    for f in ['just ','really ','basically ','actually ','simply ','I believe ','seems like ',
               'sure, ','certainly, ','happy to ','glad to ','and then ','so basically ']:
         text = text.replace(f, '')
+    # I think separately (not a filler phrase to strip for full English)
+    text = text.replace('I think ', '')
     return re.sub(r'  +', ' ', text).strip()
 
 def compress_full(text):
@@ -157,15 +159,20 @@ def compress_ultra(text):
     return re.sub(r'  +', ' ', text).strip()
 
 def compress_wenyan(text):
-    for f in ['当然！','当然','很乐意','很高兴','大概','我认为','其实','可以说','基本上','应该','可能']:
+    # Chinese filler first (before structural replacements)
+    for f in ['当然！','当然','很乐意','很高兴','大概','我认为','其实','可以说','基本上']:
         text = text.replace(f, '')
     for f in ['just ','really ','basically ','actually ','simply ','I think ','I believe ','seems like ',
               'sure, ','certainly, ','happy to ','glad to ','and then ','so basically ']:
         text = text.replace(f, '')
     for art in ['the ', 'a ', 'an ']:
         text = text.replace(art, '')
-    text = text.replace('的', '之').replace('是', '乃')
+    # Wenyan structural rules — order matters
+    # 1. Replace multi-char words before single-char
     text = text.replace('应该', '应').replace('可能', '或').replace('大概', '约')
+    # 2. 的 → 之 (but not inside other words — use boundary)
+    text = re.sub(r'(?<![a-zA-Z])的(?![a-zA-Z])', '之', text)
+    text = text.replace('是', '乃')
     return re.sub(r'  +', ' ', text).strip()
 
 def compression_ratio(orig, comp):
