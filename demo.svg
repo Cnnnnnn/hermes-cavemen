@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620">
+  <defs>
+    <style>
+      .bg { fill: #1a1a2e; }
+      .box-before { fill: #16213e; stroke: #3a3a5e; stroke-width: 2; }
+      .box-after { fill: #0f3460; stroke: #3a3a5e; stroke-width: 2; }
+      .label { font-family: system-ui, -apple-system, sans-serif; font-weight: 700; }
+      .body { font-family: system-ui, -apple-system, sans-serif; }
+      .token-count { font-family: monospace; font-weight: 600; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="620" class="bg"/>
+
+  <!-- Title -->
+  <text x="600" y="42" text-anchor="middle" class="label" fill="white" font-size="28">Hermite Cavemen — Terse Mode Demo</text>
+  <text x="600" y="70" text-anchor="middle" class="body" fill="#a0a0a0" font-size="16">~75% token reduction, same technical accuracy</text>
+
+  <!-- Top divider -->
+  <line x1="30" y1="90" x2="1170" y2="90" stroke="#3a3a5e" stroke-width="1"/>
+
+  <!-- BEFORE box -->
+  <rect x="30" y="110" width="545" height="470" rx="8" class="box-before"/>
+  <text x="55" y="145" class="label" fill="#ff6b6b" font-size="22">BEFORE</text>
+  <rect x="55" y="155" width="120" height="28" rx="4" fill="#2a2a4e"/>
+  <text x="65" y="175" class="token-count" fill="#ff6b6b" font-size="14">87 tokens</text>
+
+  <!-- Before text -->
+  <text x="55" y="220" class="body" fill="#c0c0c0" font-size="15">
+    <tspan x="55" dy="0">"当然！我很高兴帮你解决</tspan>
+    <tspan x="55" dy="24">这个问题。你遇到的问题很</tspan>
+    <tspan x="55" dy="24">可能是由于认证中间件没有</tspan>
+    <tspan x="55" dy="24">正确验证 token 过期时间导致</tspan>
+    <tspan x="55" dy="24">的。让我看一下并建议一个修</tspan>
+    <tspan x="55" dy="24">复方案。"</tspan>
+  </text>
+
+  <!-- Arrow -->
+  <text x="600" y="340" text-anchor="middle" class="label" fill="#ffd93d" font-size="20">→ 75% less →</text>
+
+  <!-- AFTER box -->
+  <rect x="625" y="110" width="545" height="470" rx="8" class="box-after"/>
+  <text x="650" y="145" class="label" fill="#4ecdc4" font-size="22">AFTER</text>
+  <rect x="650" y="155" width="110" height="28" rx="4" fill="#1a3a5e"/>
+  <text x="660" y="175" class="token-count" fill="#4ecdc4" font-size="14">24 tokens</text>
+
+  <!-- After text -->
+  <text x="650" y="220" class="body" fill="#4ecdc4" font-size="15">
+    <tspan x="650" dy="0">"认证中间件 bug。</tspan>
+    <tspan x="650" dy="24">Token 过期检查用了</tspan>
+    <tspan x="650" dy="24">&lt; 而不是 &lt;=。</tspan>
+    <tspan x="650" dy="24">修："</tspan>
+  </text>
+
+  <!-- Bottom divider -->
+  <line x1="30" y1="595" x2="1170" y2="595" stroke="#3a3a5e" stroke-width="1"/>
+
+  <!-- Token savings badge -->
+  <rect x="520" y="600" width="160" height="18" rx="9" fill="#ffd93d"/>
+  <text x="600" y="613" text-anchor="middle" class="label" fill="#1a1a2e" font-size="12">63 tokens saved (75%)</text>
+</svg>
