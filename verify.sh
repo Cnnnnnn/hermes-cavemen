@@ -105,7 +105,7 @@ import sys, re, urllib.request
 
 def count_tokens(text):
     """Chinese chars: 1 token each. English words: 1.3 tokens each."""
-    zh = len(re.findall(r'[\u4e00-\u9fff]', text))
+    zh = len(re.findall(r'[一-龥]', text))
     en = len(re.findall(r'[a-zA-Z]+', text))
     return zh + int(en * 13 / 10)
 
@@ -136,7 +136,6 @@ def compress_lite(text):
     for f in ['just ','really ','basically ','actually ','simply ','I believe ','seems like ',
               'sure, ','certainly, ','happy to ','glad to ','and then ','so basically ']:
         text = text.replace(f, '')
-    # I think separately (not a filler phrase to strip for full English)
     text = text.replace('I think ', '')
     return re.sub(r'  +', ' ', text).strip()
 
@@ -159,7 +158,6 @@ def compress_ultra(text):
     return re.sub(r'  +', ' ', text).strip()
 
 def compress_wenyan(text):
-    # Chinese filler first (before structural replacements)
     for f in ['当然！','当然','很乐意','很高兴','大概','我认为','其实','可以说','基本上']:
         text = text.replace(f, '')
     for f in ['just ','really ','basically ','actually ','simply ','I think ','I believe ','seems like ',
@@ -167,10 +165,7 @@ def compress_wenyan(text):
         text = text.replace(f, '')
     for art in ['the ', 'a ', 'an ']:
         text = text.replace(art, '')
-    # Wenyan structural rules — order matters
-    # 1. Replace multi-char words before single-char
     text = text.replace('应该', '应').replace('可能', '或').replace('大概', '约')
-    # 2. 的 → 之 (but not inside other words — use boundary)
     text = re.sub(r'(?<![a-zA-Z])的(?![a-zA-Z])', '之', text)
     text = text.replace('是', '乃')
     return re.sub(r'  +', ' ', text).strip()
