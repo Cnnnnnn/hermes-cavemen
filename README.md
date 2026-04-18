@@ -44,6 +44,11 @@ A Hermes Agent / OpenClaw adaptation of [JuliusBrussee/caveman](https://github.c
 
 **Terse Mode is ON by default.** No plugin install needed — just copy rules into `SOUL.md`.
 
+New in v1.1:
+- **Adaptive Compression** — AI auto-selects best level by task type, language, and output length
+- **Multilingual Awareness** — handles Chinese/English mixed output naturally
+- **Enhanced verify.sh** — measures actual compression ratio per level with pass/fail
+
 ## Before / After
 
 ![Terse Mode Demo](demo.png)
@@ -81,6 +86,35 @@ Replace your `SOUL.md` entirely with [`SOUL.md`](SOUL.md) from this repo.
 **Switch:** `/terse lite|full|ultra|wenyan|wenyan-lite|wenyan-full|wenyan-ultra`
 **Exit:** `normal mode` / `正常模式`
 
+## Adaptive Compression
+
+AI automatically selects the best level based on context — no manual switching needed.
+
+**Decision signals:**
+
+| Signal | Effect |
+|--------|--------|
+| Task = code | → ultra |
+| Output long (>500 chars) + English | → ultra |
+| Output short (<100 chars) | → lite |
+| User language = Chinese + specified wenyan | → wenyan / wenyan-lite / wenyan-full |
+| Destructive operation | → Auto-Clarity (terse pauses) |
+
+**Auto-Escalation:** If a response exceeds 800 characters mid-output and level is full/lite, automatically switches to ultra for the next paragraph. One-way escalation, never de-escalates.
+
+User's explicit `/terse xxx` always overrides adaptive logic.
+
+## Multilingual Awareness
+
+Mixed Chinese/English output is handled intelligently:
+
+| Scenario | Behavior |
+|----------|----------|
+| Chinese main text, English terms | Keep English terms, compress Chinese passage at full/ultra |
+| User asks "explain in English" | Full passage follows English full/ultra rules |
+| Alternating Chinese/English paragraphs | Each paragraph independently compressed |
+| Pure English output | English rules apply (drop articles, short synonyms) |
+
 ## Auto-Clarity
 
 Terse pauses automatically for:
@@ -100,6 +134,20 @@ Code, commit messages, PR descriptions, and technical terms are written normally
 
 Each `/terse xxx` command writes the preference to `MEMORY.md`. On every new session, hermes reads `MEMORY.md` for `terse_level` and applies it automatically. No need to re-set after restart.
 
+## Compression Verification
+
+Run the verify script to measure actual compression:
+
+```bash
+# Built-in benchmark
+curl -s https://raw.githubusercontent.com/Cnnnnnn/hermes-cavemen/main/verify.sh | bash
+
+# Test your own text
+curl -s https://raw.githubusercontent.com/Cnnnnnn/hermes-cavemen/main/verify.sh | bash -s -- "你的测试文字"
+```
+
+Pass thresholds: lite ≥20%, full ≥40%, ultra ≥60%, wenyan ≥70%
+
 ## Implementation: Original vs hermes
 
 | Dimension | Original caveman | hermes-cavemen |
@@ -110,6 +158,8 @@ Each `/terse xxx` command writes the preference to `MEMORY.md`. On every new ses
 | Multi-platform sync | CI auto-syncs to 8+ platforms | Single platform, no sync needed |
 | Statusline badge | `[CAVEMAN]` in Claude Code UI | Not available |
 | Wenyan sub-levels | lite / full / ultra | lite / full / ultra + wenyan-lite/full/ultra |
+| Adaptive compression | No | Yes (task/language/length signals) |
+| Multilingual awareness | No | Yes (dominant language rules) |
 
 **Why the differences?** Hermes / OpenClaw does not expose Claude Code's Hook API, flag file mechanism, statusline, or plugin system. hermes-cavemen achieves equivalent behavior through SOUL.md rules injection, which Hermes reads on every session start.
 
@@ -132,6 +182,14 @@ curl -s https://raw.githubusercontent.com/Cnnnnnn/hermes-cavemen/main/uninstall.
 
 See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) if anything breaks.
 
+## Quick Reference Card
+
+Visual one-page cheatsheet — all levels, commands, rules, and Auto-Clarity in one image:
+
+![hermes-cavemen Quick Reference](cheatsheet.svg)
+
+*Download: [cheatsheet.svg](cheatsheet.svg) · [cheatsheet.png](cheatsheet.png) (high-res)*
+
 ## Project Structure
 
 ```
@@ -142,8 +200,9 @@ hermes-cavemen/
 ├── install.sh             ← One-line installer
 ├── update.sh              ← Self-Update script
 ├── uninstall.sh           ← Uninstall script
-├── verify.sh              ← Installation verifier
+├── verify.sh              ← Installation verifier + compression tester
 ├── TROUBLESHOOTING.md     ← Common issues + fixes
+├── cheatsheet.svg/png     ← Visual quick reference
 ├── CHANGELOG.md           ← Version history
 ├── VERSION                ← Current version
 ├── .github/
@@ -152,14 +211,6 @@ hermes-cavemen/
 ```
 
 Credit: Based on [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) (37.6k stars, MIT License).
-
-## Quick Reference Card
-
-Visual one-page cheatsheet — all levels, commands, rules, and Auto-Clarity in one image:
-
-![hermes-cavemen Quick Reference](cheatsheet.svg)
-
-*Download: [cheatsheet.svg](cheatsheet.svg) · [cheatsheet.png](cheatsheet.png) (high-res)*
 
 ---
 
@@ -194,6 +245,11 @@ curl -s https://raw.githubusercontent.com/Cnnnnnn/hermes-cavemen/main/install.sh
 Hermes Agent / OpenClaw 版本的 [caveman](https://github.com/JuliusBrussee/caveman)。压缩输出约 75%，同时保留全部技术准确性。
 
 **Terse Mode 默认开启。** 无需手动激活。
+
+v1.1 新功能：
+- **自适应压缩** — AI 根据任务类型、语言、输出长度自动选择最佳级别
+- **多语言感知** — 中英混合输出场景智能处理
+- **增强 verify.sh** — 量化各级别压缩率，pass/fail 判定
 
 ## 安装方式
 
@@ -232,6 +288,35 @@ Hermes Agent / OpenClaw 版本的 [caveman](https://github.com/JuliusBrussee/cav
 **切换：** `/terse lite|full|ultra|wenyan|wenyan-lite|wenyan-full|wenyan-ultra`
 **退出：** `正常模式` / `normal mode`
 
+## 自适应压缩
+
+AI 根据上下文自动选择最合适的级别，无需手动切换。
+
+**判断信号：**
+
+| 信号 | 效果 |
+|------|------|
+| 任务 = 写代码 | → ultra |
+| 输出长（>500字）+ 英文 | → ultra |
+| 输出短（<100字） | → lite |
+| 用户语言 = 中文 + 指定 wenyan | → wenyan / wenyan-lite / wenyan-full |
+| 破坏性操作 | → Auto-Clarity（暂停 terse） |
+
+**自动升级（Auto-Escalation）：** 单次输出超过 800 字且当前为 full/lite 时，在下一段自动切 ultra。只升不降。
+
+用户显式 `/terse xxx` 永远优先于自适应逻辑。
+
+## 多语言感知
+
+中英混合输出智能处理：
+
+| 场景 | 行为 |
+|------|------|
+| 中文主体，英文术语 | 英文术语保持原样，中文段落按 full/ultra 压缩 |
+| 用户要求"用英文解释" | 整段按英文 full/ultra 规则处理 |
+| 中英文段落交替 | 各段独立判断压缩 |
+| 纯英文输出 | 按英文规则压缩（删冠词、短同义词） |
+
 ## 自动退出情况
 
 以下情况 Terse Mode 自动暂停，恢复正常输出：
@@ -251,6 +336,20 @@ Hermes Agent / OpenClaw 版本的 [caveman](https://github.com/JuliusBrussee/cav
 
 每次执行 `/terse xxx` 时，偏好会写入 `MEMORY.md`。新会话启动时自动读取并应用，无需重复设置。
 
+## 压缩率验证
+
+运行 verify 脚本测量实际压缩效果：
+
+```bash
+# 内置基准测试
+curl -s https://raw.githubusercontent.com/Cnnnnnn/hermes-cavemen/main/verify.sh | bash
+
+# 测试自定义文字
+curl -s https://raw.githubusercontent.com/Cnnnnnn/hermes-cavemen/main/verify.sh | bash -s -- "你的测试文字"
+```
+
+通过标准：lite ≥20%、full ≥40%、ultra ≥60%、wenyan ≥70%
+
 ## 实现机制：原版 vs hermes-cavemen
 
 | 维度 | 原版 caveman | hermes-cavemen |
@@ -261,6 +360,8 @@ Hermes Agent / OpenClaw 版本的 [caveman](https://github.com/JuliusBrussee/cav
 | 多平台同步 | CI 自动同步到 8+ 平台 | 单平台，无需同步 |
 | 状态栏显示 | Claude Code UI 中的 `[CAVEMAN]` | 不支持 |
 | Wenyan 子级别 | lite / full / ultra | lite / full / ultra + wenyan-lite/full/ultra |
+| 自适应压缩 | 无 | 有（任务/语言/长度信号） |
+| 多语言感知 | 无 | 有（主语言优先规则） |
 
 **差异原因：** Hermes / OpenClaw 不提供 Claude Code 的 Hook API、flag 文件机制、状态栏和插件系统。hermes-cavemen 通过 SOUL.md 规则注入实现等效行为——Hermes 每次启动读取 SOUL.md，规则自动生效。
 
@@ -283,6 +384,14 @@ curl -s https://raw.githubusercontent.com/Cnnnnnn/hermes-cavemen/main/uninstall.
 
 遇问题见 [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)。
 
+## 速查卡
+
+可视化单页参考——所有级别、命令、规则、Auto-Clarity 一图掌握：
+
+![hermes-cavemen 速查卡](cheatsheet.svg)
+
+*下载：[cheatsheet.svg](cheatsheet.svg) · [cheatsheet.png](cheatsheet.png)（高清版）*
+
 ## 项目结构
 
 ```
@@ -293,22 +402,14 @@ hermes-cavemen/
 ├── install.sh             ← 一键安装脚本
 ├── update.sh              ← 自我更新脚本
 ├── uninstall.sh           ← 卸载脚本
-├── verify.sh              ← 安装验证脚本
+├── verify.sh              ← 安装验证 + 压缩率测试
 ├── TROUBLESHOOTING.md     ← 常见问题与解决方案
+├── cheatsheet.svg/png     ← 可视化速查卡
 ├── CHANGELOG.md           ← 版本历史
 ├── VERSION                ← 当前版本
 ├── .github/
 │   └── ISSUE_TEMPLATES/   ← Bug / Feature / Verified 模板
 └── LICENSE                ← MIT
 ```
-
-## 速查卡
-
-可视化单页参考——所有级别、命令、规则、Auto-Clarity 一图掌握：
-
-![hermes-cavemen 速查卡](cheatsheet.svg)
-
-*下载：[cheatsheet.svg](cheatsheet.svg) · [cheatsheet.png](cheatsheet.png)（高清版）*
-
 
 致谢：基于 [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman)（37.6k stars，MIT License）。
