@@ -40,9 +40,27 @@ Should show `terse — hermes-cavemen` in the list.
 
 ## What is this
 
-A Hermes Agent / OpenClaw adaptation of [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman). Reduces output tokens ~75% while preserving full technical accuracy.
+hermes-cavemen is a **next-generation upgrade** of [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) — built for Hermes Agent power users who want more than basic text compression.
 
-**Terse Mode is ON by default.** No plugin install needed — just copy rules into `SOUL.md`.
+Original caveman: 1 compression level, word-by-word substitution.
+hermes-cavemen: **12 intelligent mechanisms** across v1.0 → v1.2:
+
+| | Original caveman | hermes-cavemen v1.2 |
+|---|---|---|
+| Compression levels | 1 (full) | 4 (lite / full / ultra / wenyan) |
+| Language support | English only | Bilingual (EN/ZH, auto-detect) |
+| Adaptive compression | ✗ | ✓ Task type + length + language |
+| Semantic density | ✗ | ✓ High-density content gets less compression |
+| Conversation memory | ✗ | ✓ Track explained topics, compress repeats |
+| Contradiction tracking | ✗ | ✓ Detect self-conflicts, auto-de-escalate |
+| Preference learning | ✗ | ✓ Silently adapt to your /terse habits |
+| Wenyan grammar | ✗ | ✓ Structural transformation (之/乃/為) |
+| Quality scoring | ✗ | ✓ verify.sh measures facts/direction/action |
+| Token reduction | ~40-60% | **~75%** (preserving full accuracy) |
+
+**Why use this over the original?** Your AI becomes context-aware. It knows finance text needs breathing room. It remembers what you already asked. It catches when it contradicts itself. It learns your preferred compression level over time.
+
+Terse Mode activates on every new session automatically.
 
 New in v1.2:
 - **Conversation-Level Memory** — track explained topics, compress subsequent mentions more aggressively
@@ -252,9 +270,27 @@ curl -s https://raw.githubusercontent.com/Cnnnnnn/hermes-cavemen/main/install.sh
 
 ## 是什么
 
-Hermes Agent / OpenClaw 版本的 [caveman](https://github.com/JuliusBrussee/caveman)。压缩输出约 75%，同时保留全部技术准确性。
+hermes-cavemen 是 [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) 的**下一代升级版** — 为 Hermes Agent 进阶用户打造，不止步于简单的文本压缩。
 
-**Terse Mode 默认开启。** 无需手动激活。
+原版 caveman：1 个压缩级别，逐词替换。
+hermes-cavemen v1.2：**12 大智能机制**：
+
+| | 原版 caveman | hermes-cavemen v1.2 |
+|---|---|---|
+| 压缩级别 | 1（full） | 4（lite / full / ultra / wenyan） |
+| 语言支持 | 仅英文 | 双语（EN/ZH，自动识别） |
+| 自适应压缩 | ✗ | ✓ 任务类型 + 长度 + 语言 |
+| 语义密度感知 | ✗ | ✓ 高密度内容减少压缩 |
+| 对话级记忆 | ✗ | ✓ 记录已解释话题，压缩重复引用 |
+| 矛盾追踪 | ✗ | ✓ 检测自我矛盾，自动降级 |
+| 偏好学习 | ✗ | ✓ 静默适应你的 /terse 使用习惯 |
+| 文言文语法 | ✗ | ✓ 结构转换（之/乃/為） |
+| 质量评分 | ✗ | ✓ verify.sh 衡量事实/方向/动作保留 |
+| token 减少 | ~40-60% | **~75%**（保留全部准确性） |
+
+**为什么选这个？** 让你的 AI 更懂上下文。金融文本会留足呼吸空间。它记得你问过什么，能发现自己前后矛盾，还会随着使用越来越懂你喜欢的压缩程度。
+
+Terse Mode 每个新 session 自动激活。
 
 v1.2 新功能：
 - **对话级记忆** — 记录已解释的话题，后续引用更激进压缩
